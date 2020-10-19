@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+// const cors = require('cors');
 const path = require('path');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
@@ -8,12 +8,12 @@ const ObjectID = require('mongodb').ObjectID;
 let app = express();
 app.use(bodyParser.json());
 app.use(cors());
-const PORT = 3000;
-// app.use(express.static(path.join(__dirname + '/pub')));
+const PORT = process.env.PORT || 3000;
+app.use(express.static(path.join(__dirname + '/cafe-orders')));
 
 let db;
 
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb+srv://anonymous:9Ldpcu4CH7ASfdjA@cluster0.ex11l.mongodb.net/cafeOrders?retryWrites=true&w=majority';
 const dbname = "cafeOrders";
 const client = new MongoClient(url, { useUnifiedTopology: true });
 
