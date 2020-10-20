@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-// const cors = require('cors');
+const cors = require('cors');
 const path = require('path');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
@@ -8,7 +8,7 @@ const ObjectID = require('mongodb').ObjectID;
 let app = express();
 app.use(bodyParser.json());
 app.use(cors());
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.use(express.static(path.join(__dirname + '/cafe-orders')));
 
 let db;
