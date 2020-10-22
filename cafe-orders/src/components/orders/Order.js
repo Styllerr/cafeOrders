@@ -7,6 +7,7 @@ import Container from '@material-ui/core/Container';
 import AddIcon from '@material-ui/icons/Add';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -117,19 +118,21 @@ function Order({
     }
     return (
         <>
-            <Paper>
+            <Paper style={styles.marginTop}>
                 <header style={styles.headerText}>
                     <span>Date: {tempOrder.date}</span>
                     <span>{tempOrder.waiterID === '0' ? 'Waiter not selected' : 'WaiterID: ' + tempOrder.waiterID}</span>
                     <span>{tempOrder.table === '0' ? 'Table not selected' : 'Table: ' + tempOrder.table}</span>
                 </header>
             </Paper>
-            <FormControl variant="outlined" disabled={tempOrder.orderClosed}>
+            <FormControl variant="outlined" disabled={tempOrder.orderClosed} style={styles.marginTop}>
+            <InputLabel id="select-menuSection">Waiter name</InputLabel>
                 <Select
                     labelId="select-menuSection"
-                    id="demo-simple-select-outlined"
+                    id="select-menuSection"
                     value={tempOrder.waiterID}
                     onChange={onWaiterChange}
+                    label="Waiter name"
                 >
                     <MenuItem value='0' disabled={true}>Choose the waiter</MenuItem>
                     {
@@ -139,12 +142,14 @@ function Order({
                     }
                 </Select>
             </FormControl>
-            <FormControl variant="outlined" disabled={tempOrder.orderClosed}>
+            <FormControl variant="outlined" disabled={tempOrder.orderClosed} style={styles.marginTop}>
+            <InputLabel id="select-table">Table</InputLabel>
                 <Select
                     labelId="select-table"
-                    id="simple-select-outlined"
+                    id="select-table"
                     value={tempOrder.table}
                     onChange={onTableChange}
+                    label="Table"
                 >
                     <MenuItem value='0' disabled={true}>Choose the table</MenuItem>
                     {tablesList}
@@ -173,6 +178,7 @@ function Order({
                 aria-label="add"
                 onClick={addDishModal}
                 disabled={tempOrder.orderClosed}
+                style={styles.marginRight}
             >
                 <AddIcon />
             </Fab>
@@ -182,7 +188,7 @@ function Order({
                 size="large"
                 startIcon={<SaveIcon />}
                 onClick={onOrderSave}
-                style={styles.margin}
+                style={styles.marginRight}
             >
                 Save
             </Button>
@@ -250,7 +256,7 @@ const styles = {
         height: '100%',
         top: '0',
         left: '0',
-        zIndex: '2'
+        zIndex: '2',
     },
     headerText: {
         display: 'flex',
@@ -260,9 +266,12 @@ const styles = {
         display: 'flex',
         justifyContent: 'flex-end',
         padding: '10px 20px',
-        margin: '10px 0'
+        margin: '10px 0',
     },
-    margin: {
-        margin: '0 10px'
+    marginRight: {
+        marginRight: '10px',
+    },
+    marginTop: {
+        marginTop: '10px',
     },
 }

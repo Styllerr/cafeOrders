@@ -16,39 +16,35 @@ export function setBlankOrder() {
 
 export const ACTION_CREATE_ORDER = 'ACTION/CREATE/ORDER';
 export const ACTION_UPDATE_ORDER = 'ACTION/UPDATE/ORDER';
-
 export function saveOrders(changes) {
     return function (dispatch) {
-        console.log('Change:', changes )
         if (changes._id) {
-            console.log('Edit order no: ', changes._id, ' send to server: ', changes )
-
             api.put('/orders/' + changes._id, changes)
-            .then((resp) =>{
-            console.log('Server response: ', resp.data)
-                dispatch({
-                    type: ACTION_UPDATE_ORDER,
-                    payload: resp.data,
-                })})
+                .then((resp) => {
+                    dispatch({
+                        type: ACTION_UPDATE_ORDER,
+                        payload: resp.data,
+                    })
+                })
         } else {
-
-            api.post('/orders', changes).then((resp) =>
-                dispatch({
-                    type: ACTION_CREATE_ORDER,
-                    payload: resp.data,
-                }))
+            api.post('/orders', changes)
+                .then((resp) => {
+                    dispatch({
+                        type: ACTION_CREATE_ORDER,
+                        payload: resp.data,
+                    })
+                })
         }
     }
 }
 
 export const ACTION_DELETE_ORDER = 'ACTION/DELETE/ORDER';
 export function deleteOrder(id) {
-    console.log('Delete Order no: ', id);   
     return function (dispatch) {
         api.delete('/orders/' + id)
             .then(resp => dispatch({
                 type: ACTION_DELETE_ORDER,
-                payload: resp.data.id,
+                payload: resp.data,
             }))
     }
 }
@@ -66,17 +62,17 @@ export function changeInOrder(changes) {
     }
 }
 export const ACTION_SET_ORDER_CLOSED = 'ACTION/SET/ORDER/CLOSED';
-export function onCloseOrder(changes) {
+export function onCloseOrder(flag) {
     return {
         type: ACTION_SET_ORDER_CLOSED,
-        payload: changes,
+        payload: flag,
     }
 }
 export const ACTION_ADD_DISH_IN_ORDER = 'ACTION/ADD/DISH/IN/ORDER';
 export function addDishOrder(dishId, price) {
     return {
         type: ACTION_ADD_DISH_IN_ORDER,
-        payload: {dishId, price},
+        payload: { dishId, price },
     }
 }
 export const ACTION_DEL_DISH_FROM_TEMP_ORDER = 'ACTION/DEL/DISH/FROM/TEMP/ORDER';
@@ -90,7 +86,7 @@ export const ACTION_SET_QUANTITY_ORDER = 'ACTION/SET/QUANTITY/ORDER';
 export function setQuantity(id, qnt) {
     return {
         type: ACTION_SET_QUANTITY_ORDER,
-        payload: {id, qnt},
+        payload: { id, qnt },
     }
 }
 export const ACTION_SET_EDIT_ORDER = 'ACTION/SET/EDIT/ORDER';
@@ -103,6 +99,7 @@ export function setEditOrder(id) {
 
 export function fetchOrders() {
     return function (dispatch) {
-        api.get('/orders').then((resp) => dispatch(setOrders(resp.data)));
+        api.get('/orders')
+            .then((resp) => dispatch(setOrders(resp.data)));
     }
 }

@@ -23,15 +23,26 @@ function Navigation() {
         <AppBar position="static">
             <Toolbar>
                 <NavLink to='/'>
-                    <HomeIcon style={{color: '#fff'}} fontSize="large" />
+                    <HomeIcon style={{ color: '#fff' }} fontSize="large" />
                 </NavLink>
-                <Button color="inherit" component={Link} to='/orders'>Orders</Button>
-                <Button color="inherit" component={Link} to='/orders/new'>New order</Button>
+                <Button
+                    color="inherit"
+                    component={Link}
+                    to='/orders'
+                >Orders
+                </Button>
+                <Button
+                    color="inherit"
+                    component={Link}
+                    to='/orders/new'
+                >New order
+                </Button>
                 <Button
                     color="inherit"
                     aria-controls="simple-menu"
                     aria-haspopup="true"
                     onClick={handleClick}
+                    style={styles.adminBtn}
                 >Admin
                 </Button>
                 <Menu
@@ -66,3 +77,10 @@ function Navigation() {
 }
 
 export default Navigation
+const styles = {
+    header: { textAlign: 'center' },
+    adminBtn: {
+        marginLeft: 'auto',
+        marginRight: '0'
+    },
+}

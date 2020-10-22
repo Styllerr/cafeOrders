@@ -27,7 +27,7 @@ const initialState = {
     items: [],
     tempOrder: { ...BLANK_ORDER },
 }
-function getDateNow() {
+const getDateNow = () => {
     let dateNow = new Date();
     let day = dateNow.getDate() < 10
         ? '0' + dateNow.getDate()
@@ -38,7 +38,7 @@ function getDateNow() {
         : month;
     return `${day}/${month}/${dateNow.getFullYear()}`
 }
-function getTimeNow() {
+const getTimeNow = () => {
     let dateTime = new Date();
     let hour = dateTime.getHours();
     hour = hour < 10 ? '0' + hour : hour;
@@ -46,13 +46,27 @@ function getTimeNow() {
     minute = minute < 10 ? '0' + minute : minute;
     return `${hour}:${minute}`
 }
-function updateOrder({ items }, data) {
-    return items.map(item => item._id === data._id ? data : item)
-}
-function deleteOrder({ items }, id) {
-    return items.filter(item => item.id !== id)
-}
+
 export default function (state = initialState, { type, payload }) {
+    const updateOrder = (data) => state.items.map(item => item._id === data._id ? data : item);
+    const findOrderForEdit = (id) => state.items.find(item => item._id === id);
+    const deleteOrder = (id) => state.items.filter(item => item._id !== id);
+    const deleteFromTemp = (id) => state.tempOrder.listSelectedDishes.filter(item => item.id !== id);
+    const setOrderClosingTime = (flag) => flag ? {orderCloseTime: getTimeNow()} : {orderCloseTime: ''}
+    const addDish = (data) => {
+        return {
+            ...state, tempOrder: {
+                ...state.tempOrder,
+                listSelectedDishes: [...state.tempOrder.listSelectedDishes, { id: Date.now(), ...data, quantity: '1' }]
+            }
+        }
+    }
+    const setQuantity = ({ id, qnt }) => {
+        let tempArray = state.tempOrder.listSelectedDishes.map(item => item.id === id
+            ? { ...item, quantity: qnt }
+            : item);
+        return tempArray;
+    }
     switch (type) {
         case ACTION_SET_ORDERS:
             return { ...state, items: payload };
@@ -64,13 +78,12 @@ export default function (state = initialState, { type, payload }) {
             }
         case ACTION_UPDATE_ORDER:
             return {
-                ...state, items: updateOrder(state, payload)
+                ...state, items: updateOrder(payload)
             }
         case ACTION_DELETE_ORDER:
             return {
-                ...state, items: deleteOrder(state, payload)
+                ...state, items: deleteOrder(payload)
             }
-
         case ACTION_SET_DATE_ORDER:
             return {
                 ...state, tempOrder: {
@@ -88,11 +101,12 @@ export default function (state = initialState, { type, payload }) {
                 ...state, tempOrder: {
                     ...state.tempOrder,
                     orderClosed: payload,
-                    orderCloseTime: getTimeNow()
+                    ...setOrderClosingTime(payload)
                 }
             }
         case ACTION_ADD_DISH_IN_ORDER:
-            return addDish(payload);
+            return addDish(payload)
+
         case ACTION_DEL_DISH_FROM_TEMP_ORDER:
             return {
                 ...state,
@@ -110,32 +124,5 @@ export default function (state = initialState, { type, payload }) {
             }
         default:
             return state
-    }
-    function addDish(data) {
-        return {
-            ...state,
-            tempOrder: {
-                ...state.tempOrder,
-                listSelectedDishes: [
-                    ...state.tempOrder.listSelectedDishes,
-                    {
-                        id: Date.now(),
-                        ...data,
-                        quantity: '1',
-                    }]
-            }
-        }
-    }
-    function deleteFromTemp(id) {
-        return state.tempOrder.listSelectedDishes.filter(item => item.id !== id);
-    }
-    function setQuantity({ id, qnt }) {
-        let tempArray = state.tempOrder.listSelectedDishes.map(item => item.id === id
-            ? { ...item, quantity: qnt }
-            : item);
-        return tempArray;
-    }
-    function findOrderForEdit(id) {
-        return state.items.find(item => item._id === id)
     }
 } 

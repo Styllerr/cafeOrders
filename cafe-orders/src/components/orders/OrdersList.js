@@ -39,7 +39,7 @@ function OrdersList({ orders }) {
                             <TableCell>Waiter</TableCell>
                             <TableCell>Table</TableCell>
                             <TableCell>Sum</TableCell>
-                            <TableCell>Open/Close</TableCell>
+                            <TableCell align='center'>Open/Close</TableCell>
                             <TableCell>Action</TableCell>
                         </TableRow>
                     </TableHead>
