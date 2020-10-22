@@ -7,3 +7,7 @@
     font-style: italic;
     line-height: 3rem;
 }
+li > .btnInInstruction {
+    font-style: normal;
+    margin: 0 20px;
+}

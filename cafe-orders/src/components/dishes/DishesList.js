@@ -10,6 +10,11 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Icon from '@material-ui/core/Icon';
 import SearchIcon from '@material-ui/icons/Search';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -18,12 +23,13 @@ import DishesItem from './DishesItem';
 import { connect } from 'react-redux';
 import { setUnselectDish } from '../../store/actions/dishes';
 
-function DishesList({ dishes, setUnselectDish, addDishInOrder }) {
+function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
 
     const history = useHistory();
     const { url } = useRouteMatch();
     const [findDish, setfindDish] = useState('');
     const [dishesList, setDishesList] = useState(dishes.items);
+    const [filter, setFilter] = useState('0')
 
     function filteredDish({ items }, findDish) {
         let regexp = new RegExp(`${findDish}`, 'gi');
@@ -51,6 +57,9 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder }) {
     function onChangeFindDish(event) {
         setfindDish(event.target.value)
     }
+    function onFilterChange (event) {
+        setFilter(event.target.value)
+    }
     function clearSearch() {
         setfindDish('');
     }
@@ -71,6 +80,28 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder }) {
                 <IconButton onClick={clearSearch}>
                     <ClearIcon />
                 </IconButton>
+                <FormControl variant="outlined">
+                <InputLabel id="select-filter">Filter</InputLabel>
+                <Select
+                    labelId="select-filter"
+                    id="select-filter"
+                    value={filter}
+                    onChange={onFilterChange}
+                    label="filter"
+                >
+                    <MenuItem value='0' disabled={true}>Filter by Menu Section</MenuItem>
+                    {
+                        menuSections.items.map((item) => {
+                            return <MenuItem 
+                            key={item._id}
+                            value={item._id}
+                            >{item.title}</MenuItem>
+                        }
+
+                        )
+                        }
+                </Select>
+                </FormControl>
             </Paper>
             <TableContainer component={Paper}>
                 <Table aria-label="simple table">
@@ -123,8 +154,9 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder }) {
     )
 }
 
-const mapStateToProps = ({ dishes }) => ({
+const mapStateToProps = ({ dishes, menuSections }) => ({
     dishes,
+    menuSections,
 });
 const mapDispatchToProps = {
     setUnselectDish,

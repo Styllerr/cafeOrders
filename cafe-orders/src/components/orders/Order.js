@@ -58,7 +58,7 @@ function Order({
         } else if (orders.length !== 0) {
             setEditOrder(id);
         }
-    }, [, id, orders.length, setBlankOrder, setDateOrder, setEditOrder]);
+    }, [id, orders.length, setBlankOrder, setDateOrder, setEditOrder]);
     useEffect(() => {
         calculateSum();
     }, [tempOrder.listSelectedDishes]);
