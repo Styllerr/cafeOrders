@@ -38,7 +38,6 @@ function Home() {
                                 To add a new dish to the list, press the 
                                 <Fab 
                                     className="btnInInstruction"
-                                    variant="contained"
                                     color="primary"
                                 >
                                 <AddIcon />

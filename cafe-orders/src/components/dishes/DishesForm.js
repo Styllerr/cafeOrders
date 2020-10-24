@@ -40,8 +40,10 @@ function DishesForm(
         history.push('/menu/new');
     }
     function onFormSubmit(data) {
-        saveDish(data);
-        history.goBack();
+        if(data.menuSectionId !== '0') {
+            saveDish(data);
+            history.goBack();
+        }
     }
     function onCancel() {
         history.goBack()

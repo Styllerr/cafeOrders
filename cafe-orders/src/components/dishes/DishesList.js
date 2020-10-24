@@ -14,7 +14,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Icon from '@material-ui/core/Icon';
 import SearchIcon from '@material-ui/icons/Search';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -27,22 +26,56 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
 
     const history = useHistory();
     const { url } = useRouteMatch();
-    const [findDish, setfindDish] = useState('');
-    const [dishesList, setDishesList] = useState(dishes.items);
-    const [filter, setFilter] = useState('0')
 
-    function filteredDish({ items }, findDish) {
+    const findTitleById = (id) => menuSections.items.find((item) => item._id === id).title
+    const sortDishBy = (array) => {
+        if (filter === '0') {
+            let sortArray = array.sort(function (a, b) {
+                let result = findTitleById(a.menuSectionId).toLowerCase() <= findTitleById(b.menuSectionId).toLowerCase()
+                return result ? -1 : 1
+            })
+            return sortArray
+        } else {
+            let sortArray = array.sort(function (a, b) {
+                let result = a.dishTitle.toLowerCase() <= b.dishTitle.toLowerCase()
+                return result ? -1 : 1
+            })
+            return sortArray
+        }
+    }
+    const filteredDish = (items, findDish) => {
         let regexp = new RegExp(`${findDish}`, 'gi');
-        return items.filter(item => regexp.test(item.dishTitle));
+        return items.filter(item => regexp.test(item.dishTitle.toLowerCase()));
     }
 
+    const [findDish, setfindDish] = useState('');
+    const [sortList, setSortList] = useState(dishes.items)
+    const [dishesList, setDishesList] = useState(sortList);
+    const [filter, setFilter] = useState('0')
+
+
     useEffect(() => {
-        if (findDish === '') {
-            setDishesList(dishes.items);
+        if (filter !== '0') {
+            let tempArray = sortDishBy(dishes.items.filter((item) => item.menuSectionId === filter));
+            setSortList(tempArray);
         } else {
-            setDishesList(filteredDish(dishes, findDish));
+            setSortList(sortDishBy(dishes.items));
         }
-    }, [findDish, dishes])
+    }, [filter, dishes])
+
+    useEffect(() => {
+        setDishesList(sortList)
+    }, [sortList])
+
+    useEffect(() => {
+        if (findDish !== '') {
+            setDishesList(filteredDish(sortList, findDish));
+        } 
+        else {
+            setDishesList(sortList);
+        }
+    }, [findDish, sortList])
+
 
     function handleAddDish() {
         history.push(`${url}/new`);
@@ -57,12 +90,10 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
     function onChangeFindDish(event) {
         setfindDish(event.target.value)
     }
-    function onFilterChange (event) {
+    function onFilterChange(event) {
         setFilter(event.target.value)
     }
-    function clearSearch() {
-        setfindDish('');
-    }
+    const clearSearch = () => setfindDish('')
     return (
         <>
             <Paper>
@@ -81,26 +112,24 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
                     <ClearIcon />
                 </IconButton>
                 <FormControl variant="outlined">
-                <InputLabel id="select-filter">Filter</InputLabel>
-                <Select
-                    labelId="select-filter"
-                    id="select-filter"
-                    value={filter}
-                    onChange={onFilterChange}
-                    label="filter"
-                >
-                    <MenuItem value='0' disabled={true}>Filter by Menu Section</MenuItem>
-                    {
-                        menuSections.items.map((item) => {
-                            return <MenuItem 
-                            key={item._id}
-                            value={item._id}
-                            >{item.title}</MenuItem>
+                    <InputLabel id="select-filter">Filter</InputLabel>
+                    <Select
+                        labelId="select-filter"
+                        id="select-filter"
+                        value={filter}
+                        onChange={onFilterChange}
+                        label="filter"
+                    >
+                        <MenuItem value='0'>Without filter</MenuItem>
+                        {
+                            menuSections.items.map((item) => {
+                                return <MenuItem
+                                    key={item._id}
+                                    value={item._id}
+                                >{item.title}</MenuItem>
+                            })
                         }
-
-                        )
-                        }
-                </Select>
+                    </Select>
                 </FormControl>
             </Paper>
             <TableContainer component={Paper}>
