@@ -5,6 +5,7 @@ import MenuSectionForm from './MenuSectionForm';
 
 function MenuSection() {
     const { url } = useRouteMatch();
+    
     return (
             <Switch>
                 <Route path={`${url}/`} exact>

@@ -8,21 +8,20 @@ import { connect } from 'react-redux';
 import { deleteOrder } from '../../store/actions/orders';
 
 function OrdersItem({ order, waiters, deleteOrder }) {
+
     const history = useHistory();
     const { url } = useRouteMatch();
 
-    function waiterID(waiterID) {
+    const onRowClick = () => history.push(`${url}/${order._id}`);
+    const waiterID = (waiterID) => {
         let tempWaiterByID = waiters.find((item) => item._id === waiterID);
         return tempWaiterByID ? `${tempWaiterByID.name} ${tempWaiterByID.surname}` : 'noneme';
-    }
+    };
+    const onDelete = (e) => {
+        e.stopPropagation();
+        deleteOrder(order._id);
+    };
 
-    function onRowClick() {
-        history.push(`${url}/${order._id}`)
-    }
-    function onDelete(event) {
-        event.stopPropagation();
-        deleteOrder(order._id)
-    }
     return (
         <TableRow onClick={onRowClick}>
             <TableCell >{order.date}</TableCell>

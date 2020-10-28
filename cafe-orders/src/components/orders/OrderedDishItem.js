@@ -18,19 +18,12 @@ function OrderedDishItem({
 
     useEffect(() => {
         calculateSum();
-    }, [dish.quantity]);
+    }, [dish.quantity, calculateSum]);
 
-    function findDish(id) {
-        return dishes.find(item => item._id === id)
-    }
-
-    function onChangeQnt(e) {
-        setQuantityDish(dish.id, e.target.value);
-
-    }
-    function onDelete() {
-        deleteDish(dish.id)
-    }
+    const findDish = (id) => dishes.find(item => item._id === id)
+    const onChangeQnt = (e) => setQuantityDish(dish.id, e.target.value);
+    const onDelete = () => deleteDish(dish.id)
+    
     return (
         <TableRow >
             <TableCell
@@ -83,7 +76,6 @@ function OrderedDishItem({
 const mapStateToProps = (state) => ({
     dishes: state.dishes.items,
 })
-
 export default connect(mapStateToProps)(OrderedDishItem)
 const styles = {
     digit: {

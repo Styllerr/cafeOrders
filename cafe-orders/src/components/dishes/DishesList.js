@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
@@ -26,9 +26,11 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
 
     const history = useHistory();
     const { url } = useRouteMatch();
+    
+    const [filter, setFilter] = useState('0');
+    const findTitleById = useCallback((id) => menuSections.items.find((item) => item._id === id).title, [menuSections.items]);
 
-    const findTitleById = (id) => menuSections.items.find((item) => item._id === id).title
-    const sortDishBy = (array) => {
+    const sortDishBy = useCallback((array) => {
         if (filter === '0') {
             let sortArray = array.sort(function (a, b) {
                 let result = findTitleById(a.menuSectionId).toLowerCase() <= findTitleById(b.menuSectionId).toLowerCase()
@@ -41,17 +43,12 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
                 return result ? -1 : 1
             })
             return sortArray
-        }
-    }
-    const filteredDish = (items, findDish) => {
-        let regexp = new RegExp(`${findDish}`, 'gi');
-        return items.filter(item => regexp.test(item.dishTitle.toLowerCase()));
-    }
-
+        }}, [filter, findTitleById])
+    const filteredDish = (items, findDish) => items.filter(item => (item.dishTitle.toLowerCase().includes(findDish)));
+    
     const [findDish, setfindDish] = useState('');
     const [sortList, setSortList] = useState(dishes.items)
     const [dishesList, setDishesList] = useState(sortList);
-    const [filter, setFilter] = useState('0')
 
 
     useEffect(() => {
@@ -61,7 +58,7 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
         } else {
             setSortList(sortDishBy(dishes.items));
         }
-    }, [filter, dishes])
+    }, [filter, dishes, sortDishBy])
 
     useEffect(() => {
         setDishesList(sortList)

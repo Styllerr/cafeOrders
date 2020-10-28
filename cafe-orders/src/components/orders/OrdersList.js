@@ -18,13 +18,8 @@ function OrdersList({ orders }) {
 
     const history = useHistory();
     const { url } = useRouteMatch();
-
-    function handleAddOrder() {
-        history.push(`${url}/new`);
-    }
-    function onCancel() {
-        history.goBack()
-    }
+    const handleAddOrder = () => history.push(`${url}/new`);
+    const onCancel = () => history.goBack();
     return (
         <>
             <Paper>

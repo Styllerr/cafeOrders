@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import OrderedDishList from './OrderedDishList'
 import { withRouter, useHistory } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -51,6 +51,14 @@ function Order({
 }) {
     const history = useHistory();
 
+    const calculateSum = useCallback(() => {
+        let total = 0;
+        tempOrder.listSelectedDishes.forEach(item => {
+            total += item.price * item.quantity
+        })
+        changeInOrder({ sum: total })
+    }, [tempOrder.listSelectedDishes, changeInOrder]);
+
     useEffect(() => {
         if (id === 'new') {
             setBlankOrder();
@@ -59,9 +67,10 @@ function Order({
             setEditOrder(id);
         }
     }, [id, orders.length, setBlankOrder, setDateOrder, setEditOrder]);
+
     useEffect(() => {
         calculateSum();
-    }, [tempOrder.listSelectedDishes]);
+    }, [tempOrder.listSelectedDishes, calculateSum]);
 
 
     const tablesList = [];
@@ -69,28 +78,14 @@ function Order({
         tablesList.push(<MenuItem key={i} value={i}>{i}</MenuItem>)
     }
 
-    function onWaiterChange(e) {
-        changeInOrder({ waiterID: e.target.value })
-    }
-    function onTableChange(e) {
-        changeInOrder({ table: e.target.value })
-    }
-
-    function addDishModal() {
-        setSelectDish();
-    }
-
-    function addDishInOrder(dishId, price) {
-        addDishOrder(dishId, price)
-    }
-    function deleteDish(id) {
-        delDishTempOrder(id)
-    }
-    function setQuantityDish(id, qnt) {
-        setQuantity(id, qnt);
-    }
-
-    function onOrderSave() {
+    const onWaiterChange = (e) => changeInOrder({ waiterID: e.target.value });
+    const onTableChange = (e) => changeInOrder({ table: e.target.value });
+    const addDishModal = () => setSelectDish();
+    const addDishInOrder = (dishId, price) => addDishOrder(dishId, price);
+    const deleteDish = (id) => delDishTempOrder(id);
+    const setQuantityDish = (id, qnt) => setQuantity(id, qnt);
+    const handleCheck = (e) =>  onCloseOrder(e.target.checked);
+    const onOrderSave = () => {
         if (tempOrder.waiterID !== '0') {
             saveOrders(tempOrder);
             setUnselectDish();
@@ -99,23 +94,11 @@ function Order({
             console.error('Waiter non selected')
         }
     }
-
-    function onCancel() {
+    const onCancel = () => {
         setUnselectDish();
-        history.goBack()
+        history.goBack();
     }
 
-    function calculateSum() {
-        let total = 0;
-        tempOrder.listSelectedDishes.forEach(item => {
-            total += item.price * item.quantity
-        })
-        changeInOrder({ sum: total })
-    }
-
-    function handleCheck(event) {
-        onCloseOrder(event.target.checked);
-    }
     return (
         <>
             <Paper style={styles.marginTop}>
@@ -126,7 +109,7 @@ function Order({
                 </header>
             </Paper>
             <FormControl variant="outlined" disabled={tempOrder.orderClosed} style={styles.marginTop}>
-            <InputLabel id="select-menuSection">Waiter name</InputLabel>
+                <InputLabel id="select-menuSection">Waiter name</InputLabel>
                 <Select
                     labelId="select-menuSection"
                     id="select-menuSection"
@@ -143,7 +126,7 @@ function Order({
                 </Select>
             </FormControl>
             <FormControl variant="outlined" disabled={tempOrder.orderClosed} style={styles.marginTop}>
-            <InputLabel id="select-table">Table</InputLabel>
+                <InputLabel id="select-table">Table</InputLabel>
                 <Select
                     labelId="select-table"
                     id="select-table"

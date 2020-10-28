@@ -23,24 +23,17 @@ function MenuSectionForm({
 }) {
     const history = useHistory();
 
-    function getItemForForm(id) {
-        return id === 'new' ? BLANK : selectedItem(id);
-    }
-    function selectedItem(id) {
-        return menuSections.find(item => item._id === id)
-    }
-    function onFormSubmit(data) {
+    const getItemForForm = (id) => id === 'new' ? BLANK : selectedItem(id);
+    const selectedItem = (id) => menuSections.find(item => item._id === id);
+    const onCancel = () => history.goBack();
+    const onFormSubmit = (data) => {
         saveMenuSection(data);
         history.goBack();
     }
-    function onCancel() {
+    const onDelete = () => {
+        deleteMenuSection(id);
         history.goBack();
     }
-    function onDelete() {
-            deleteMenuSection(id);
-            history.goBack();
-        }
-    
     return (
         <>
             <Paper>
@@ -117,5 +110,5 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MenuSecti
 
 const styles = {
     header: { textAlign: 'center' },
-    margin: {marginRight: '20px'}
+    margin: { marginRight: '20px' }
 }

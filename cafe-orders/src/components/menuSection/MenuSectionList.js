@@ -17,13 +17,9 @@ function MenuSectionList({ menuSections }) {
 
     const history = useHistory();
     const { url } = useRouteMatch();
-
-    function handleAddMenu() {
-        history.push(`${url}/new`);
-    }
-    function onCancel() {
-        history.goBack()
-    }
+    const handleAddMenu = () => history.push(`${url}/new`);
+    const onCancel = () => history.goBack();
+    
     return (
         <>
             <Paper>
