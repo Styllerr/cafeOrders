@@ -4,7 +4,7 @@ import TableCell from '@material-ui/core/TableCell';
 import { useRouteMatch, useHistory } from 'react-router-dom';
 
 
-function MenuSectionItem({ menu }) {
+function MenuSectionItem({ menu, number }) {
     const history = useHistory();
     const { url } = useRouteMatch();
     const onRowClick = () => history.push(`${url}/${menu._id}`);
@@ -14,7 +14,7 @@ function MenuSectionItem({ menu }) {
             <TableCell
                 component="th"
                 scope="row">
-                {menu._id}
+                {number + 1}
             </TableCell>
             <TableCell >{menu.title}</TableCell>
             <TableCell >{menu.description}</TableCell>

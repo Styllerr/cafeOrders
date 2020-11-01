@@ -19,7 +19,7 @@ function MenuSectionList({ menuSections }) {
     const { url } = useRouteMatch();
     const handleAddMenu = () => history.push(`${url}/new`);
     const onCancel = () => history.goBack();
-    
+
     return (
         <>
             <Paper>
@@ -29,14 +29,14 @@ function MenuSectionList({ menuSections }) {
                 <Table aria-label="simple table">
                     <TableHead style={styles.tableCaption}>
                         <TableRow>
-                            <TableCell >ID</TableCell>
+                            <TableCell>№</TableCell>
                             <TableCell>Menu section</TableCell>
                             <TableCell>Description</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {menuSections.map((item) => (
-                            <MenuSectionItem menu={item} key={item._id} />
+                        {menuSections.map((item, index) => (
+                            <MenuSectionItem menu={item} number={index} key={item._id} />
                         ))}
                     </TableBody>
                 </Table>
@@ -66,10 +66,9 @@ const mapStateToProps = ({ menuSections: { items } }) => ({
     menuSections: items,
 });
 export default connect(mapStateToProps)(MenuSectionList)
+
 const styles = {
     header: { textAlign: 'center' },
     margin: { margin: '20px' },
-    tableCaption: {
-        backgroundColor: '#fafafa'
-    },
+    tableCaption: { backgroundColor: '#fafafa' },
 }

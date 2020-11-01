@@ -20,7 +20,7 @@ const BLANK = {
     menuSectionId: '0',
     description: '',
     price: 0,
-}
+};
 
 function DishesForm({
     match: { params: { id } },
@@ -34,15 +34,16 @@ function DishesForm({
     const selectedItem = (id) => dishes.find(item => item._id === id);
     const getItemForForm = (id) => id === 'new' ? BLANK : selectedItem(id);
     const onAddMenuSection = () => history.push('/menu/new');
-    const onCancel = () => history.goBack()
+    const onCancel = () => history.goBack();
+    const saveButtonStatus = (isValid, dirty) =>  !(isValid && dirty);
     const onDelete = () => {
         deleteDishes(id);
-        history.goBack()
-    }
+        history.goBack();
+    };
     const onFormSubmit = (data) => {
         saveDish(data);
         history.goBack();
-    }
+    };
     const dishSchema = yup.object().shape({
         dishTitle: yup.string()
             .min(3, 'Very short title')
@@ -155,7 +156,7 @@ function DishesForm({
                                         size="large"
                                         startIcon={<SaveIcon />}
                                         type='submit'
-                                        disabled={!form.isValid}
+                                        disabled={saveButtonStatus(form.isValid, form.dirty)}
                                     >Save dish
                                     </Button>
                                 )}

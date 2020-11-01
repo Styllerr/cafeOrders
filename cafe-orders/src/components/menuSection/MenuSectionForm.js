@@ -1,6 +1,8 @@
 import React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
+import * as yup from 'yup';
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -26,6 +28,7 @@ function MenuSectionForm({
     const getItemForForm = (id) => id === 'new' ? BLANK : selectedItem(id);
     const selectedItem = (id) => menuSections.find(item => item._id === id);
     const onCancel = () => history.goBack();
+    const saveButtonStatus = (isValid, dirty) =>  !(isValid && dirty);
     const onFormSubmit = (data) => {
         saveMenuSection(data);
         history.goBack();
@@ -34,6 +37,14 @@ function MenuSectionForm({
         deleteMenuSection(id);
         history.goBack();
     }
+    const menuSectionSchema = yup.object().shape({
+        title: yup.string()
+            .min(3, 'Very short title')
+            .required('Title is required'),
+        description: yup.string()
+            .min(5, 'Very short description')
+            .required('Description is required'),
+    })
     return (
         <>
             <Paper>
@@ -43,57 +54,81 @@ function MenuSectionForm({
             </Paper>
             <Formik
                 initialValues={getItemForForm(id)}
+                validateOnBlur
+                validationSchema={menuSectionSchema}
                 onSubmit={onFormSubmit}>
                 <Form>
-                    <Field name='title' type='text'>
-                        {({ field, meta }) => (
-                            <TextField
-                                {...field}
-                                id="outlined-basic"
-                                label="Title"
-                                variant="outlined"
-                                style={styles.margin} />
-                        )}
-                    </Field>
-                    <Field name='description' type='text'>
-                        {({ field, meta }) => (
-                            <TextField
-                                {...field}
-                                id="outlined-basic"
-                                label="Description"
-                                variant="outlined"
-                                style={styles.margin} />
-                        )}
-                    </Field>
-                    <Button
-                        variant="contained"
-                        style={styles.margin}
-                        color="primary"
-                        size="large"
-                        startIcon={<SaveIcon />}
-                        type='submit'
-                    >Save
+                    <Grid container spacing={2} alignItems="flex-start">
+                        <Grid item xs={12} sm={4}>
+                            <Field name='title' type='text'>
+                                {({ field, meta }) => (
+                                    <div>
+                                        <TextField
+                                            {...field}
+                                            id="outlined-basic"
+                                            label="Title"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
+                                    </div>
+                                )}
+                            </Field>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Field name='description' type='text'>
+                                {({ field, meta }) => (
+                                    <div>
+                                        <TextField
+                                            {...field}
+                                            id="outlined-basic"
+                                            label="Description"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
+                                    </div>
+                                )}
+                            </Field>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Field>
+                                {({ form }) => (
+
+                                    <Button
+                                        variant="contained"
+                                        style={styles.margin}
+                                        color="primary"
+                                        size="large"
+                                        startIcon={<SaveIcon />}
+                                        type='submit'
+                                        disabled={saveButtonStatus(form.isValid, form.dirty)}
+                                    >Save
+                                    </Button>
+                                )}
+                            </Field>
+                            <Button
+                                variant="contained"
+                                style={styles.margin}
+                                color="primary"
+                                size="large"
+                                startIcon={<CancelIcon />}
+                                onClick={onCancel}
+                            >Cancel
                     </Button>
-                    <Button
-                        variant="contained"
-                        style={styles.margin}
-                        color="primary"
-                        size="large"
-                        startIcon={<CancelIcon />}
-                        onClick={onCancel}
-                    >Cancel
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size="large"
+                                startIcon={<DeleteIcon />}
+                                onClick={onDelete}
+                                disabled={id !== 'new'
+                                    ? false
+                                    : true}
+                            >Delete
                     </Button>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="large"
-                        startIcon={<DeleteIcon />}
-                        onClick={onDelete}
-                        disabled={id !== 'new'
-                            ? false
-                            : true}
-                    >Delete
-                    </Button>
+                        </Grid>
+                    </Grid>
                 </Form>
             </Formik>
         </>
@@ -110,5 +145,6 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MenuSecti
 
 const styles = {
     header: { textAlign: 'center' },
-    margin: { marginRight: '20px' }
+    margin: { marginRight: '20px' },
+    error: { color: 'red' },
 }
