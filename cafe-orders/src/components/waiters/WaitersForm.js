@@ -1,6 +1,9 @@
 import React from 'react';
 import { withRouter, useHistory } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
+import * as yup from 'yup';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -20,93 +23,123 @@ function WaitersForm({ match: { params: { id } }, waiters, saveWaiter, deleteWai
 
     const history = useHistory();
 
-    function selectedItem(id) {
-        return waiters.find(item => item._id === id)
-    }
-    function getItemForForm(id) {
-        return id === 'new' ? BLANK : selectedItem(id);
-    }
-    function onFormSubmit(data) {
+    const selectedItem = (id) => waiters.find(item => item._id === id);
+    const getItemForForm = (id) => id === 'new' ? BLANK : selectedItem(id);
+    const onCancel = () => history.goBack();
+    const saveButtonStatus = (isValid, dirty) =>  !(isValid && dirty);
+    const onFormSubmit = (data) => {
         saveWaiter(data);
         history.goBack();
     }
-    function onCancel() {
-        history.goBack()
-    }
-    function onDelete() {
+    const onDelete = () => {
         deleteWaiter(id);
         history.goBack();
     }
+    const waiterSchema = yup.object().shape({
+        name: yup.string()
+            .min(2, 'Very short name')
+            .required('Name is required'),
+        surname: yup.string()
+            .min(2, 'Very short second name')
+            .required('Surname is required'),
+    })
     return (
         <>
-            <h2 style={{ textAlign: 'center' }}>
-                {id !== 'new' ? 'Edit waiter' : 'Create new waiter'}
-            </h2>
+            <Paper>
+                <h2 style={styles.header}>
+                    {id !== 'new' ? 'Edit waiter' : 'Create new waiter'}
+                </h2>
+            </Paper>
             <Formik
                 initialValues={getItemForForm(id)}
+                validateOnBlur
+                validationSchema={waiterSchema}
                 onSubmit={onFormSubmit}
             >
                 <Form>
-                    <Field name='name' type='text'>
-                        {({ field, meta }) => (
-                            <TextField
-                                {...field}
-                                id="outlined-basic"
-                                label="Name"
-                                variant="outlined"
-                                style={styles.fildBtnMargin} />
-                        )}
-                    </Field>
-                    <Field name='surname' type='text'>
-                        {({ field, meta }) => (
-                            <TextField
-                                {...field}
-                                id="outlined-basic"
-                                label="Surname"
-                                variant="outlined"
-                                style={styles.fildBtnMargin} />
-                        )}
-                    </Field>
-                    <Field name='notation' type='text'>
-                        {({ field, meta }) => (
-                            <TextField
-                                {...field}
-                                id="outlined-basic"
-                                label="Notation"
-                                variant="outlined"
-                                style={styles.fildBtnMargin} />
-                        )}
-                    </Field>
-
-                    <Button
-                        variant="contained"
-                        style={styles.fildBtnMargin}
-                        color="primary"
-                        size="large"
-                        startIcon={<SaveIcon />}
-                        type='submit'
-                    >Save
-                    </Button>
-                    <Button
-                        variant="contained"
-                        style={styles.fildBtnMargin}
-                        color="primary"
-                        size="large"
-                        startIcon={<CancelIcon />}
-                        onClick={onCancel}
-                    >Cancel
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="large"
-                        startIcon={<DeleteIcon />}
-                        onClick={onDelete}
-                        disabled={id !== 'new'
-                            ? false
-                            : true}
-                    >Delete
-                    </Button>
+                    <Grid container spacing={2} alignItems="flex-start">
+                        <Grid item xs={12} sm={3}>
+                            <Field name='name' type='text'>
+                                {({ field, meta }) => (
+                                    <div>
+                                        <TextField
+                                            {...field}
+                                            id="outlined-basic"
+                                            label="Name"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
+                                    </div>
+                                )}
+                            </Field>
+                        </Grid>
+                        <Grid item xs={12} sm={3}>
+                            <Field name='surname' type='text'>
+                                {({ field, meta }) => (
+                                    <div>
+                                        <TextField
+                                            {...field}
+                                            id="outlined-basic"
+                                            label="Surname"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
+                                    </div>
+                                )}
+                            </Field>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <Field name='notation' type='text'>
+                                {({ field, meta }) => (
+                                    <TextField
+                                        {...field}
+                                        id="outlined-basic"
+                                        label="Notation"
+                                        variant="outlined"
+                                        fullWidth
+                                    />
+                                )}
+                            </Field>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Field>
+                                {({ form }) => (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="large"
+                                        startIcon={<SaveIcon />}
+                                        type='submit'
+                                        disabled={saveButtonStatus(form.isValid, form.dirty)}
+                                        style={styles.btnMargin}
+                                    >Save
+                                    </Button>
+                                )}
+                            </Field>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                startIcon={<CancelIcon />}
+                                onClick={onCancel}
+                                style={styles.btnMargin}
+                            >Cancel
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size="large"
+                                startIcon={<DeleteIcon />}
+                                onClick={onDelete}
+                                disabled={id !== 'new'
+                                    ? false
+                                    : true}
+                            >Delete
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Form>
             </Formik>
         </>
@@ -123,7 +156,13 @@ const mapDispatchToProps = {
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(WaitersForm))
 
 const styles = {
-    fildBtnMargin: {
-        marginRight: '25px',
-    }
+    header: {
+        textAlign: 'center',
+    },
+    btnMargin: {
+        marginRight: '20px',
+    },
+    error: {
+        color: 'red'
+    },
 }

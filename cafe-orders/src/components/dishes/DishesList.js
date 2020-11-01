@@ -26,9 +26,19 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
 
     const history = useHistory();
     const { url } = useRouteMatch();
-    
+
     const [filter, setFilter] = useState('0');
+    const [findDish, setfindDish] = useState('');
+    const [sortList, setSortList] = useState(dishes.items);
+    const [dishesList, setDishesList] = useState(sortList);
+
+    const handleAddDish = () => history.push(`${url}/new`);
+    const onCancel = () => !dishes.onSelectDish ? history.goBack() : setUnselectDish();
     const findTitleById = useCallback((id) => menuSections.items.find((item) => item._id === id).title, [menuSections.items]);
+    const onChangeFindDish = (e) => setfindDish(e.target.value);
+    const filteredDish = (items, findDish) => items.filter(item => (item.dishTitle.toLowerCase().includes(findDish)));
+    const onFilterChange = (e) => setFilter(e.target.value);
+    const clearSearch = () => setfindDish('');
 
     const sortDishBy = useCallback((array) => {
         if (filter === '0') {
@@ -43,13 +53,8 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
                 return result ? -1 : 1
             })
             return sortArray
-        }}, [filter, findTitleById])
-    const filteredDish = (items, findDish) => items.filter(item => (item.dishTitle.toLowerCase().includes(findDish)));
-    
-    const [findDish, setfindDish] = useState('');
-    const [sortList, setSortList] = useState(dishes.items)
-    const [dishesList, setDishesList] = useState(sortList);
-
+        }
+    }, [filter, findTitleById]);
 
     useEffect(() => {
         if (filter !== '0') {
@@ -58,39 +63,20 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
         } else {
             setSortList(sortDishBy(dishes.items));
         }
-    }, [filter, dishes, sortDishBy])
+    }, [filter, dishes, sortDishBy]);
 
     useEffect(() => {
         setDishesList(sortList)
-    }, [sortList])
+    }, [sortList]);
 
     useEffect(() => {
         if (findDish !== '') {
             setDishesList(filteredDish(sortList, findDish));
-        } 
-        else {
+        } else {
             setDishesList(sortList);
         }
-    }, [findDish, sortList])
+    }, [findDish, sortList]);
 
-
-    function handleAddDish() {
-        history.push(`${url}/new`);
-    }
-    function onCancel() {
-        if (!dishes.onSelectDish) {
-            history.goBack()
-        } else {
-            setUnselectDish()
-        }
-    }
-    function onChangeFindDish(event) {
-        setfindDish(event.target.value)
-    }
-    function onFilterChange(event) {
-        setFilter(event.target.value)
-    }
-    const clearSearch = () => setfindDish('')
     return (
         <>
             <Paper>
@@ -98,18 +84,21 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
                 <h2 style={styles.header}>Dishes list</h2>
             </Paper>
             <Paper style={styles.searchPaper}>
-                <SearchIcon />
-                <InputBase
-                    placeholder="Search dish by title..."
-                    value={findDish}
-                    onChange={onChangeFindDish}
-                    style={styles.searchFild}
-                />
-                <IconButton onClick={clearSearch}>
-                    <ClearIcon />
-                </IconButton>
-                <FormControl variant="outlined">
-                    <InputLabel id="select-filter">Filter</InputLabel>
+                <div style={styles.searchFild}>
+                    <SearchIcon />
+                    <InputBase
+                        placeholder="Search dish by title..."
+                        value={findDish}
+                        onChange={onChangeFindDish}
+                    />
+                    <IconButton onClick={clearSearch}>
+                        <ClearIcon />
+                    </IconButton>
+                </div>
+                <FormControl
+                    style={styles.filter}
+                >
+                    <InputLabel id="select-filter">Filter by Menu Section</InputLabel>
                     <Select
                         labelId="select-filter"
                         id="select-filter"
@@ -158,7 +147,7 @@ function DishesList({ dishes, setUnselectDish, addDishInOrder, menuSections }) {
                         size="large"
                         onClick={handleAddDish}
                         startIcon={<Icon>add_circle</Icon>}
-                        style={{ margin: '20px' }}
+                        style={styles.margin}
                     >Add new dish</Button>
                     <Button
                         variant="contained"
@@ -192,14 +181,22 @@ export default connect(mapStateToProps, mapDispatchToProps)(DishesList)
 const styles = {
     header: { textAlign: 'center' },
     tableCaption: { backgroundColor: '#fafafa' },
+    margin: {
+        margin: '20px'
+    },
     searchPaper: {
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
     },
     searchFild: {
-        width: '35%',
-        margin: '0 20px',
+        width: '25%',
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
+    filter: {
+        minWidth: '165px',
     }
 
 }

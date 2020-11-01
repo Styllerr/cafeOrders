@@ -19,45 +19,42 @@ function WaitersList({ waiters }) {
     const history = useHistory();
     const { url } = useRouteMatch();
 
-    function handleAddWaiter() {
-        history.push(`${url}/new`);
-    }
-    function onCancel() {
-        history.goBack()
-    }
+    const handleAddWaiter = () => history.push(`${url}/new`);
+    const onCancel = () => history.goBack();
+
     return (
         <>
             <Paper>
                 <h2 style={styles.header}>Waiters list</h2>
             </Paper>
             <Grid container spacing={5} alignItems="center">
-                <Grid item xs={8} md={6}>
+                <Grid item xs={12} md={7}>
                     <TableContainer component={Paper}>
                         <Table aria-label="simple table">
                             <TableHead style={styles.tableCaption}>
                                 <TableRow>
-                                    <TableCell>ID</TableCell>
+                                    <TableCell>№</TableCell>
                                     <TableCell>Name</TableCell>
                                     <TableCell>Surname</TableCell>
                                     <TableCell>Notation</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {waiters.map((item) => (
-                                    <WaitersItem waiter={item} key={item._id} />
+                                {waiters.map((item, index) => (
+                                    <WaitersItem waiter={item} number={index} key={item._id} />
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Grid item xs={4} md={6}>
+                <Grid item xs={12} md={5}>
                     <Button
                         variant="contained"
                         color="primary"
                         size="large"
                         onClick={handleAddWaiter}
                         startIcon={<Icon>add_circle</Icon>}
-                        style={{ margin: '20px' }}
+                        style={styles.btnMargin}
                     >Add new waiter
                     </Button>
                     <Button
@@ -73,7 +70,6 @@ function WaitersList({ waiters }) {
         </>
     )
 }
-
 const mapStateToProps = ({ waiters: { items } }) => ({
     waiters: items,
 });
@@ -82,4 +78,5 @@ export default connect(mapStateToProps)(WaitersList)
 const styles = {
     header: { textAlign: 'center' },
     tableCaption: { backgroundColor: '#fafafa' },
+    btnMargin: { marginRight: '1rem' },
 }

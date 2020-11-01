@@ -11,19 +11,15 @@ import { Link } from 'react-router-dom';
 function Navigation() {
 
     const [anchorEl, setAnchorEl] = useState(null);
-
-    function handleClick(e) {
-        setAnchorEl(e.target);
-    };
-
-    function handleClose() {
-        setAnchorEl(null);
-    };
+    const handleClick = (e) => setAnchorEl(e.target);
+    const handleClose = () => setAnchorEl(null);
     return (
         <AppBar position="static">
             <Toolbar>
                 <NavLink to='/'>
-                    <HomeIcon style={{ color: '#fff' }} fontSize="large" />
+                    <HomeIcon
+                        style={styles.home}
+                        fontSize="large" />
                 </NavLink>
                 <Button
                     color="inherit"
@@ -83,4 +79,7 @@ const styles = {
         marginLeft: 'auto',
         marginRight: '0'
     },
+    home: {
+        color: '#fff'
+    }
 }

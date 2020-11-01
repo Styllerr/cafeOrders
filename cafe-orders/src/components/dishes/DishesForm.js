@@ -1,6 +1,7 @@
 import React from 'react';
 import { Formik, Form, Field } from 'formik';
 import { withRouter, useHistory } from 'react-router-dom';
+import * as yup from 'yup';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import CancelIcon from '@material-ui/icons/Cancel';
@@ -18,40 +19,43 @@ const BLANK = {
     dishTitle: '',
     menuSectionId: '0',
     description: '',
-    price: '0',
+    price: 0,
 }
 
-function DishesForm(
-    { match: { params: { id } },
-        menuSections,
-        dishes,
-        saveDish,
-        deleteDishes }
-) {
+function DishesForm({
+    match: { params: { id } },
+    menuSections,
+    dishes,
+    saveDish,
+    deleteDishes }
+){
     const history = useHistory();
 
-    function selectedItem(id) {
-        return dishes.find(item => item._id === id)
-    }
-    function getItemForForm(id) {
-        return id === 'new' ? BLANK : selectedItem(id);
-    }
-    function onAddMenuSection() {
-        history.push('/menu/new');
-    }
-    function onFormSubmit(data) {
-        if(data.menuSectionId !== '0') {
-            saveDish(data);
-            history.goBack();
-        }
-    }
-    function onCancel() {
+    const selectedItem = (id) => dishes.find(item => item._id === id);
+    const getItemForForm = (id) => id === 'new' ? BLANK : selectedItem(id);
+    const onAddMenuSection = () => history.push('/menu/new');
+    const onCancel = () => history.goBack()
+    const onDelete = () => {
+        deleteDishes(id);
         history.goBack()
     }
-    function onDelete() {
-        deleteDishes(id);
+    const onFormSubmit = (data) => {
+        saveDish(data);
         history.goBack();
     }
+    const dishSchema = yup.object().shape({
+        dishTitle: yup.string()
+            .min(3, 'Very short title')
+            .required('Dish title is required'),
+        description: yup.string()
+            .min(5, 'Very short description')
+            .required('Needed write description'),
+        menuSectionId: yup.string()
+            .test('', 'Needed choose menu section', (value) => value !== '0'),
+        price: yup.number().typeError('Digits only!')
+            .test('', 'Enter right price!', (value) => value !== 0)
+            .required('Required'),
+    })
     return (
         <>
             <Paper>
@@ -61,10 +65,12 @@ function DishesForm(
             </Paper>
             <Formik
                 initialValues={getItemForForm(id)}
+                validateOnBlur
+                validationSchema={dishSchema}
                 onSubmit={onFormSubmit}
             >
                 <Form>
-                    <Grid container spacing={5} alignItems="center">
+                    <Grid container spacing={5} alignItems="flex-start">
                         <Grid item xs={12} style={styles.grid}>
                             <Field name='menuSectionId' type='text' >
                                 {({ field, meta }) => (
@@ -81,6 +87,7 @@ function DishesForm(
                                                 })
                                             }
                                         </Select>
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
                                     </FormControl>
                                 )}
                             </Field>
@@ -94,61 +101,65 @@ function DishesForm(
                             </Button>
                         </Grid>
                         <Grid item xs={12} style={styles.grid}>
-                            <Field name='_id' type='text'>
-                                {({ field, meta }) => (
-                                    <TextField
-                                        {...field}
-                                        id="outlined-basic"
-                                        label="ID"
-                                        variant="outlined"
-                                        disabled={true}
-                                        style={styles.shot}
-                                    />
-                                )}
-                            </Field>
                             <Field name='dishTitle' type='text'>
                                 {({ field, meta }) => (
-                                    <TextField
-                                        {...field}
-                                        id="outlined-basic"
-                                        label="Title"
-                                        variant="outlined"
-                                        style={styles.margin}
-                                    />
+                                    <div style={styles.title}>
+                                        <TextField
+                                            {...field}
+                                            id="outlined-basic"
+                                            label="Title"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
+                                    </div>
                                 )}
                             </Field>
                             <Field name='description' type='text'>
                                 {({ field, meta }) => (
-                                    <TextField
-                                        {...field}
-                                        id="outlined-basic"
-                                        label="Description"
-                                        variant="outlined"
-                                        rowsMax='2'
-                                        style={styles.margin}
-                                    />
+                                    <div style={styles.description}>
+                                        <TextField
+                                            {...field}
+                                            id="outlined-basic"
+                                            label="Description"
+                                            variant="outlined"
+                                            rowsMax='2'
+                                            fullWidth
+                                        />
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
+                                    </div>
                                 )}
                             </Field>
-                            <Field name='price' type='text'>
+                            <Field name='price' type='number' >
                                 {({ field, meta }) => (
-                                    <TextField
-                                        {...field}
-                                        id="outlined-basic"
-                                        label="Price"
-                                        variant="outlined"
-                                        style={styles.shot}
-                                    />
+                                    <div style={styles.price}>
+                                        <TextField
+                                            {...field}
+                                            id="outlined-basic"
+                                            label="Price"
+                                            variant="outlined"
+                                            fullWidth
+                                        />
+                                        {meta.touched && meta.error && <div style={styles.error}>{meta.error}</div>}
+                                    </div>
                                 )}
                             </Field>
-                            <Button
-                                variant="contained"
-                                style={styles.margin}
-                                color="primary"
-                                size="large"
-                                startIcon={<SaveIcon />}
-                                type='submit'
-                            >Save dish
-                            </Button>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Field>
+                                {({ form }) => (
+                                    <Button
+                                        variant="contained"
+                                        style={styles.margin}
+                                        color="primary"
+                                        size="large"
+                                        startIcon={<SaveIcon />}
+                                        type='submit'
+                                        disabled={!form.isValid}
+                                    >Save dish
+                                    </Button>
+                                )}
+                            </Field>
                             <Button
                                 variant="contained"
                                 style={styles.margin}
@@ -170,6 +181,7 @@ function DishesForm(
                             >Delete
                             </Button>
                         </Grid>
+
                     </Grid>
                 </Form>
             </Formik>
@@ -191,15 +203,26 @@ const styles = {
     header: {
         textAlign: 'center',
     },
-    shot: {
-        marginRight: '10px',
-        width: '80px'
+    title: {
+        minWidth: '20%',
+        paddingRight: '10px',
+    },
+    description: {
+        minWidth: '40%',
+        paddingRight: '10px',
+    },
+    price: {
+        minWidth: '65px',
+        maxWidth: '115px',
     },
     margin: {
         marginRight: '10px',
     },
     grid: {
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flexStart',
     },
+    error: {
+        color: 'red'
+    }
 }

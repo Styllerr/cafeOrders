@@ -5,30 +5,23 @@ import TableCell from '@material-ui/core/TableCell';
 import { connect } from 'react-redux';
 import { setUnselectDish } from '../../store/actions/dishes'
 
-
-function DishesItem(
-    {
-        dish,
-        menuSections,
-        forSelect,
-        setUnselectDish,
-        addDishInOrder,
-    }
-) {
+function DishesItem({
+    dish,
+    menuSections,
+    forSelect,
+    setUnselectDish,
+    addDishInOrder,
+}) {
     const history = useHistory();
     const { url } = useRouteMatch();
-    function menuID({ menuSectionId }) {
+    const menuID = ({ menuSectionId }) => {
         let temp = menuSections.find((item) => item._id === menuSectionId);
         return temp ? temp.title : '0';
     }
-
-    function onRowClick() {
-        if (forSelect) {
-            setUnselectDish();
-            addDishInOrder(dish._id, dish.price);
-        } else {
-            history.push(`${url}/${dish._id}`)
-        }
+    const onRowClick = () => {
+        forSelect
+            ? setUnselectDish() && addDishInOrder(dish._id, dish.price)
+            : history.push(`${url}/${dish._id}`)
     }
     return (
         <TableRow onClick={onRowClick}>

@@ -5,21 +5,22 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 
 
-function WaitersItem({ waiter }) {
+function WaitersItem({ waiter, number }) {
     const history = useHistory();
     const { url } = useRouteMatch();
 
-    function onRowClick() {
-        history.push(`${url}/${waiter._id}`)
-    }
+    const onRowClick = () => history.push(`${url}/${waiter._id}`);
+
     return (
         <TableRow onClick={onRowClick}>
-            <TableCell component="th" scope="row">
-                {waiter._id}
+            <TableCell
+                component="th"
+                scope="row">
+                {number + 1}
             </TableCell>
-            <TableCell >{waiter.name}</TableCell>
-            <TableCell >{waiter.surname}</TableCell>
-            <TableCell >{waiter.notation}</TableCell>
+            <TableCell>{waiter.name}</TableCell>
+            <TableCell>{waiter.surname}</TableCell>
+            <TableCell>{waiter.notation}</TableCell>
         </TableRow>
     )
 }
