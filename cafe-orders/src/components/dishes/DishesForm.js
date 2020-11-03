@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { withRouter, useHistory } from 'react-router-dom';
 import * as yup from 'yup';
@@ -12,6 +12,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Grid from '@material-ui/core/Grid';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { saveDish, deleteDishes } from '../../store/actions/dishes';
 import { connect } from 'react-redux';
 
@@ -26,19 +30,36 @@ function DishesForm({
     match: { params: { id } },
     menuSections,
     dishes,
+    orders,
     saveDish,
     deleteDishes }
-){
+) {
     const history = useHistory();
+    const [modalVisible, setModalVisible] = useState(false);
 
+    const closeModal = () => setModalVisible(false);
     const selectedItem = (id) => dishes.find(item => item._id === id);
     const getItemForForm = (id) => id === 'new' ? BLANK : selectedItem(id);
     const onAddMenuSection = () => history.push('/menu/new');
     const onCancel = () => history.goBack();
-    const saveButtonStatus = (isValid, dirty) =>  !(isValid && dirty);
+    const saveButtonStatus = (isValid, dirty) => !(isValid && dirty);
+    const findForDelete = () => {
+        let array = orders.filter((
+            item => item.listSelectedDishes.findIndex(
+                dish => dish.dishId === id) !== -1));
+        let result = [];
+        array.forEach((item, index) => {
+            result.push(`${index + 1}. Order from ${item.date} in the amount of ${item.sum}`)
+        });
+        return { length: array.length, result }
+    }
     const onDelete = () => {
-        deleteDishes(id);
-        history.goBack();
+        if (findForDelete().length !== 0) {
+            setModalVisible(true);
+        } else {
+            deleteDishes(id);
+            history.goBack();
+        }
     };
     const onFormSubmit = (data) => {
         saveDish(data);
@@ -186,6 +207,31 @@ function DishesForm({
                     </Grid>
                 </Form>
             </Formik>
+            {
+                modalVisible
+                    ? <>
+                        <Dialog
+                            open={modalVisible}
+                            onClose={closeModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">{"Deletion aborted."}</DialogTitle>
+                            <DialogContent>
+                                <div>
+                                    Found related data. First, delete the records containing this item.
+                                {findForDelete().result.map((item, index) => <p key={index}>{item}</p>)}
+                                </div>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={closeModal} color="primary" autoFocus>
+                                    Ok
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </>
+                    : null
+            }
         </>
     )
 }
@@ -193,6 +239,7 @@ function DishesForm({
 const mapStateToProps = (state) => ({
     menuSections: state.menuSections.items,
     dishes: state.dishes.items,
+    orders: state.orders.items,
 });
 const mapDispatchToProps = {
     saveDish,

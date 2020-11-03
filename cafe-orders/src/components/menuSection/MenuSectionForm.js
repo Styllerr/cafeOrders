@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as yup from 'yup';
@@ -9,6 +9,10 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import DeleteIcon from '@material-ui/icons/Delete';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { connect } from 'react-redux';
 import { saveMenuSection, deleteMenuSection } from '../../store/actions/menuSections'
 
@@ -20,11 +24,14 @@ const BLANK = {
 function MenuSectionForm({
     match: { params: { id } },
     menuSections,
+    dishes,
     saveMenuSection,
-    deleteMenuSection
+    deleteMenuSection,
 }) {
     const history = useHistory();
+    const [modalVisible, setModalVisible] = useState(false);
 
+    const closeModal = () => setModalVisible(false);
     const getItemForForm = (id) => id === 'new' ? BLANK : selectedItem(id);
     const selectedItem = (id) => menuSections.find(item => item._id === id);
     const onCancel = () => history.goBack();
@@ -33,9 +40,21 @@ function MenuSectionForm({
         saveMenuSection(data);
         history.goBack();
     }
+    const findForDelete = () => {
+        let array = dishes.filter((item => item.menuSectionId === id));
+        let result = [];
+        array.forEach((item, index) => {
+            result.push(`${index+1}. Dish: ${item.dishTitle} belongs to the menu section to be deleted`)
+        });
+        return { length: array.length, result }
+    }
     const onDelete = () => {
-        deleteMenuSection(id);
-        history.goBack();
+        if (findForDelete().length !== 0) {
+            setModalVisible(true);
+        } else {
+            deleteMenuSection(id);
+            history.goBack();
+        }
     }
     const menuSectionSchema = yup.object().shape({
         title: yup.string()
@@ -94,7 +113,6 @@ function MenuSectionForm({
                         <Grid item xs={12}>
                             <Field>
                                 {({ form }) => (
-
                                     <Button
                                         variant="contained"
                                         style={styles.margin}
@@ -131,11 +149,37 @@ function MenuSectionForm({
                     </Grid>
                 </Form>
             </Formik>
+            {
+                modalVisible
+                    ? <>
+                        <Dialog
+                            open={modalVisible}
+                            onClose={closeModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">{"Deletion aborted."}</DialogTitle>
+                            <DialogContent>
+                                <div>
+                                Found related data. First, delete the records containing this item.
+                                {findForDelete().result.map((item, index) => <p key={index}>{item}</p>)}
+                                </div>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={closeModal} color="primary" autoFocus>
+                                    Ok
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </>
+                    : null
+            }
         </>
     )
 }
-const mapStateToProps = ({ menuSections: { items } }) => ({
-    menuSections: items,
+const mapStateToProps = ({ menuSections, dishes }) => ({
+    menuSections: menuSections.items,
+    dishes: dishes.items,
 });
 const mapDispatchToProps = {
     saveMenuSection,
