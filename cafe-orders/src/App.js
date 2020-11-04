@@ -1,5 +1,4 @@
 import React from 'react';
-// import './App.css';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -9,6 +8,7 @@ import Orders from './components/orders/Orders';
 import Home from './components/home/Home';
 import Dishes from './components/dishes/Dishes';
 import MenuSection from './components/menuSection/MenuSection';
+import Statistic from './components/common/Statistic';
 
 function App() {
 
@@ -33,6 +33,9 @@ function App() {
               </Route>
               <Route path='/menu'>
                 <MenuSection />
+              </Route>
+              <Route path='/statistic'>
+                <Statistic />
               </Route>
               <Route path='*'>
                 <Redirect to='/' />

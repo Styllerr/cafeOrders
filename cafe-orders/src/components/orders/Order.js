@@ -213,8 +213,8 @@ function Order({
                             <DialogTitle id="alert-dialog-title">{"Save error."}</DialogTitle>
                             <DialogContent>
                                 {(tempOrder.listSelectedDishes.length === 0) ? <div>Add at least one line item to your order.</div> : null}
-                                {(tempOrder.waiterID === '0') ? <div>-== Choose waiter. ==-</div> : null}
-                                {(tempOrder.table === '0') ? <div>-== Choose table. ==-</div> : null}
+                                {(tempOrder.waiterID === '0') ? <div>Choose the waiter.</div> : null}
+                                {(tempOrder.table === '0') ? <div>Choose the table.</div> : null}
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={closeModal} color="primary" autoFocus>

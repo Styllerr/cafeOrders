@@ -65,6 +65,8 @@ function Navigation() {
                     >Dishes list</MenuItem>
                     <MenuItem
                         onClick={handleClose}
+                        component={NavLink}
+                        to='/statistic'
                     >Statistic</MenuItem>
                 </Menu>
             </Toolbar>
