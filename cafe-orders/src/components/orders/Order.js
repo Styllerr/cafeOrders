@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import OrderedDishList from './OrderedDishList'
 import { withRouter, useHistory } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -14,6 +14,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import SaveIcon from '@material-ui/icons/Save';
 import CancelIcon from '@material-ui/icons/Cancel';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { connect } from 'react-redux';
 import { setSelectDish, setUnselectDish, } from '../../store/actions/dishes';
 import {
@@ -50,7 +54,9 @@ function Order({
     onCloseOrder,
 }) {
     const history = useHistory();
+    const [modalVisible, setModalVisible] = useState(false);
 
+    const closeModal = () => setModalVisible(false);
     const calculateSum = useCallback(() => {
         let total = 0;
         tempOrder.listSelectedDishes.forEach(item => {
@@ -84,14 +90,14 @@ function Order({
     const addDishInOrder = (dishId, price) => addDishOrder(dishId, price);
     const deleteDish = (id) => delDishTempOrder(id);
     const setQuantityDish = (id, qnt) => setQuantity(id, qnt);
-    const handleCheck = (e) =>  onCloseOrder(e.target.checked);
+    const handleCheck = (e) => onCloseOrder(e.target.checked);
     const onOrderSave = () => {
-        if (tempOrder.waiterID !== '0') {
+        if (tempOrder.waiterID !== '0' && tempOrder.table !== '0' && tempOrder.listSelectedDishes.length !== 0) {
             saveOrders(tempOrder);
             setUnselectDish();
             history.push('/orders');
         } else {
-            console.error('Waiter non selected')
+            setModalVisible(true);
         }
     }
     const onCancel = () => {
@@ -195,6 +201,30 @@ function Order({
                     </>
                     : null
             }
+            {
+                modalVisible
+                    ? <>
+                        <Dialog
+                            open={modalVisible}
+                            onClose={closeModal}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">{"Save error."}</DialogTitle>
+                            <DialogContent>
+                                {(tempOrder.listSelectedDishes.length === 0) ? <div>Add at least one line item to your order.</div> : null}
+                                {(tempOrder.waiterID === '0') ? <div>-== Choose waiter. ==-</div> : null}
+                                {(tempOrder.table === '0') ? <div>-== Choose table. ==-</div> : null}
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={closeModal} color="primary" autoFocus>
+                                    Ok
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </>
+                    : null
+            }
         </>
     )
 }
@@ -256,5 +286,8 @@ const styles = {
     },
     marginTop: {
         marginTop: '10px',
+    },
+    error: {
+        color: 'red'
     },
 }
