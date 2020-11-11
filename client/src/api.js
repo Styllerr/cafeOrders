@@ -1,6 +1,6 @@
 import axios from 'axios';
-// const PATH = 'https://5f1b7a17254cec0016082228.mockapi.io/';
-const PATH = 'http://localhost:5000/';
+const PORT = process.env.PORT || 80;
+const PATH = `http://localhost:${PORT}/api/`;
 
 export default axios.create({
     baseURL: PATH,
