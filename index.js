@@ -13,7 +13,7 @@ app.use(express.static('client'));
 
 let db;
 
-const url = 'mongodb+srv://anonymous:9Ldpcu4CH7ASfdjA@cluster0.ex11l.mongodb.net/cafeOrders?retryWrites=true&w=majority';
+const url = process.env.MONGODB_URI || 'mongodb+srv://anonymous:9Ldpcu4CH7ASfdjA@cluster0.ex11l.mongodb.net/cafeOrders?retryWrites=true&w=majority';
 const dbname = "cafeOrders";
 const client = new MongoClient(url, { useUnifiedTopology: true });
 
