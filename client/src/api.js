@@ -1,5 +1,8 @@
 import axios from 'axios';
-const PATH = 'http://cafe-orders-react.herokuapp.com/api/';
+const PORT = process.env.PORT || 80;
+const PATH = 'http://localhost:' + PORT + '/api/';
+
+console.log(PATH);
 
 export default axios.create({
     baseURL: PATH,
