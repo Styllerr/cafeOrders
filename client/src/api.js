@@ -1,6 +1,6 @@
 import axios from 'axios';
 const PORT = process.env.PORT || 80;
-const PATH = 'http://localhost:' + PORT;
+const PATH = 'http://localhost/api/';
 
 console.log(PATH);
 

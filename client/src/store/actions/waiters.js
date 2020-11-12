@@ -41,7 +41,7 @@ export function deleteWaiter(id) {
 
 export function fetchWaiters() {
     return function (dispatch) {
-        api.get('/waiters')
+        api.get('waiters')
             .then((resp) => dispatch(setWaiters(resp.data)));
     }
 }
