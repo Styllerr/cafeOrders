@@ -7,6 +7,7 @@ const ObjectID = require('mongodb').ObjectID;
 
 let app = express();
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 const PORT = process.env.PORT || 80;
 app.use(express.static('client'));
