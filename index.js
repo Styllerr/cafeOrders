@@ -18,7 +18,6 @@ const url = process.env.MONGODB_URI || 'mongodb+srv://anonymous:9Ldpcu4CH7ASfdjA
 const dbname = "cafeOrders";
 const client = new MongoClient(url, { useUnifiedTopology: true });
 
-
 /////////////////////////////////////////////////////////////////////////////////////////
 app.get('/api/waiters', (req, res) => {
     db.collection('waiters').find().toArray((err, docs) => {
