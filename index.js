@@ -9,6 +9,7 @@ let app = express();
 app.use(bodyParser.json());
 app.use(cors());
 const PORT = process.env.PORT || 80;
+app.use(express.static('client'));
 
 let db;
 
