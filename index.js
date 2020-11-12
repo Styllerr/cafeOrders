@@ -10,11 +10,9 @@ app.use(bodyParser.json());
 app.use(cors());
 const PORT = process.env.PORT || 80;
 
-app.use(express.static(path.join(__dirname, 'client', 'build')));
-
 let db;
 
-const url = process.env.MONGODB_URI || 'mongodb+srv://anonymous:9Ldpcu4CH7ASfdjA@cluster0.ex11l.mongodb.net/cafeOrders?retryWrites=true&w=majority';
+const url = 'mongodb+srv://anonymous:9Ldpcu4CH7ASfdjA@cluster0.ex11l.mongodb.net/cafeOrders?retryWrites=true&w=majority';
 const dbname = "cafeOrders";
 const client = new MongoClient(url, { useUnifiedTopology: true });
 
@@ -182,7 +180,9 @@ app.delete('/api/menuSections/:id', (req, res) => {
         res.send(req.params.id);
     })
 });
-
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('client/build'));
+}
 app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
 });
