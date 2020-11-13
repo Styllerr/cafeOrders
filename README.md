@@ -1,5 +1,5 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
+This application is the final work of the graduate of the React course in IT Hillel School (https://dnipro.ithillel.ua/school) Evgeny Chukavov <cork@ukr.net>
+The terms of reference, as well as layouts, were absent, the idea of the application was given, with an independent development of the implementation.
 ## Available Scripts
 
 In the project directory, you can run:
