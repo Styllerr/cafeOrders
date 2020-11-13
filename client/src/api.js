@@ -1,5 +1,5 @@
 import axios from 'axios';
-const PATH = 'http://localhost:5000/api/';
+const PATH = 'https://cafe-orders-react.herokuapp.com/api/';
 
 console.log(PATH);
 
